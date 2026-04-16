@@ -161,12 +161,13 @@ app.post('/api/shifts/register', (req, res) => {
 
   const data = loadData();
 
+  const normalize = str => str.toLowerCase().replace(/\s+/g, ' ').trim();
   const existing = data.shifts.find(
-    s => s.name.toLowerCase() === name.toLowerCase() &&
+    s => normalize(s.name) === normalize(name) &&
          s.standort === standort && s.date === date && s.type === type
   );
   if (existing) {
-    return res.status(409).json({ error: 'Du bist für diese Schicht bereits eingetragen' });
+    return res.status(409).json({ error: `❌ ${name} ist für diese Schicht bereits eingetragen!` });
   }
 
   const shiftsForDay = data.shifts.filter(s => s.standort === standort && s.date === date);
@@ -203,9 +204,11 @@ app.post('/api/shifts/register', (req, res) => {
     sendWhatsApp(phone, msg);
   }
 
+  const calLink = buildCalendarLink(name, standort, date, time.start, time.end);
   res.json({
     success: true,
-    message: `Erfolgreich eingetragen! Deine Schicht: ${time.start} – ${time.end} Uhr${phone ? ' – WhatsApp wird gesendet 📱' : ''}`
+    message: `Erfolgreich eingetragen! Deine Schicht: ${time.start} – ${time.end} Uhr${phone ? ' – WhatsApp wird gesendet 📱' : ''}`,
+    calLink
   });
 });
 
