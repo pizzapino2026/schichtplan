@@ -1,0 +1,12 @@
+{
+  "name": "pizza-pino-schichtplan",
+  "version": "1.0.0",
+  "description": "Schichtplan App für Pizza Pino Uhingen & Esslingen",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

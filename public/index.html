@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza Pino – Schichtplan</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #f39c12 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { text-align: center; padding: 30px 0 20px; color: white; }
+    header h1 { font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin-bottom: 5px; }
+    header p { font-size: 1em; opacity: 0.9; }
+
+    .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+    .nav-tab {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.5);
+      color: white; padding: 10px 25px; border-radius: 25px;
+      cursor: pointer; font-size: 1em; font-weight: bold; transition: all 0.2s;
+    }
+    .nav-tab.active, .nav-tab:hover { background: white; color: #c0392b; border-color: white; }
+
+    .card {
+      background: white; border-radius: 16px; padding: 25px;
+      margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .card h2 { color: #c0392b; margin-bottom: 20px; font-size: 1.4em; }
+
+    .standort-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .standort-tab {
+      flex: 1; padding: 12px; border: 2px solid #e0e0e0;
+      border-radius: 10px; cursor: pointer; text-align: center;
+      font-weight: bold; color: #666; transition: all 0.2s;
+    }
+    .standort-tab.active { border-color: #c0392b; background: #fdf2f2; color: #c0392b; }
+
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; color: #333; margin-bottom: 5px; }
+    input, select {
+      width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 1em; transition: border-color 0.2s; outline: none;
+    }
+    input:focus, select:focus { border-color: #c0392b; }
+
+    .btn {
+      width: 100%; padding: 14px; border: none; border-radius: 10px;
+      font-size: 1.05em; font-weight: bold; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-primary { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(192,57,43,0.4); }
+    .btn-secondary { background: #f8f8f8; color: #333; border: 2px solid #ddd; margin-top: 8px; }
+    .btn-secondary:hover { background: #eee; }
+
+    .message {
+      padding: 12px 16px; border-radius: 8px; margin-bottom: 15px;
+      font-weight: bold; display: none;
+    }
+    .message.success { background: #d4edda; color: #155724; display: block; }
+    .message.error { background: #f8d7da; color: #721c24; display: block; }
+
+    /* Time info box */
+    .time-info-box {
+      background: #fff8e1; border: 2px solid #f39c12; border-radius: 10px;
+      padding: 12px 16px; margin-bottom: 15px; display: none;
+    }
+    .time-info-box .time-row {
+      display: flex; align-items: center; gap: 10px; padding: 5px 0;
+      border-bottom: 1px solid #fce08a; font-size: 0.95em;
+    }
+    .time-info-box .time-row:last-child { border-bottom: none; }
+    .time-info-box .slot-label { font-weight: bold; min-width: 140px; color: #555; }
+    .time-info-box .slot-time { color: #c0392b; font-weight: bold; }
+
+    /* Week view */
+    .week-nav {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+    }
+    .week-nav button {
+      background: #c0392b; color: white; border: none;
+      border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 1em;
+    }
+    .week-nav span { font-weight: bold; font-size: 1.1em; color: #333; }
+
+    .week-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .day-card {
+      border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .day-card:hover { border-color: #c0392b; background: #fdf2f2; }
+    .day-card.closed { background: #f5f5f5; opacity: 0.5; cursor: default; }
+    .day-card.selected { border-color: #c0392b; background: #fdf2f2; }
+    .day-card .day-name { font-weight: bold; color: #333; font-size: 0.95em; }
+    .day-card .day-date { color: #666; font-size: 0.8em; margin: 3px 0; }
+    .day-card .slots { margin-top: 8px; font-size: 0.75em; }
+
+    .slot-badge {
+      display: inline-block; padding: 2px 7px; border-radius: 10px;
+      margin: 2px; font-weight: bold;
+    }
+    .slot-fix { background: #d4edda; color: #155724; }
+    .slot-bereit { background: #fff3cd; color: #856404; }
+    .slot-full { background: #f8d7da; color: #721c24; }
+
+    .shift-detail {
+      margin-top: 15px; padding: 15px; background: #f8f8f8; border-radius: 10px;
+    }
+    .shift-detail h3 { color: #c0392b; margin-bottom: 10px; }
+
+    .name-list { list-style: none; padding: 0; }
+    .name-list li {
+      padding: 8px 0; border-bottom: 1px solid #eee;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .name-list li:last-child { border-bottom: none; }
+    .name-tag { font-weight: bold; }
+    .time-tag { font-size: 0.8em; color: #888; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.6em; }
+      .week-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🍕 Pizza Pino</h1>
+    <p>Schichtplan – Fahrer Eintragung</p>
+  </header>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showPage('register')">Eintragen</div>
+    <div class="nav-tab" onclick="showPage('overview')">Übersicht</div>
+    <div class="nav-tab" onclick="showPage('admin')">👨‍💼 Chef</div>
+  </div>
+
+  <!-- ===== REGISTER ===== -->
+  <div class="page active" id="page-register">
+    <div class="card">
+      <h2>📝 Für Schicht eintragen</h2>
+      <div id="msg-register" class="message"></div>
+
+      <div class="form-group">
+        <label>Standort</label>
+        <div class="standort-tabs">
+          <div class="standort-tab active" id="tab-uhingen" onclick="selectStandort('uhingen')">📍 Uhingen</div>
+          <div class="standort-tab" id="tab-esslingen" onclick="selectStandort('esslingen')">📍 Esslingen</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-name">Dein Name</label>
+        <input type="text" id="reg-name" placeholder="Vorname Nachname" />
+      </div>
+
+      <div class="form-group">
+        <label for="reg-date">Datum</label>
+        <input type="date" id="reg-date" />
+      </div>
+
+      <div id="closed-warning" class="message error" style="display:none">
+        ⛔ Dienstag ist Ruhetag – kein Betrieb.
+      </div>
+
+      <div id="type-group" class="form-group">
+        <label for="reg-type">Schichttyp</label>
+        <select id="reg-type" onchange="updateTimeInfo()">
+          <option value="fix">✅ Fix-Fahrer</option>
+          <option value="bereitschaft">📞 Bereitschaft</option>
+        </select>
+      </div>
+
+      <!-- Dynamic time info -->
+      <div class="time-info-box" id="time-info-box">
+        <div style="font-weight:bold;color:#856404;margin-bottom:8px">⏰ Schichtzeiten an diesem Tag:</div>
+        <div id="time-info-rows"></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="registerShift()">Eintragen 🍕</button>
+      <button class="btn btn-secondary" onclick="unregisterShift()">Austragen ❌</button>
+    </div>
+  </div>
+
+  <!-- ===== OVERVIEW ===== -->
+  <div class="page" id="page-overview">
+    <div class="card">
+      <h2>📅 Wochenübersicht</h2>
+      <div class="standort-tabs">
+        <div class="standort-tab active" id="ov-tab-uhingen" onclick="selectOverviewStandort('uhingen')">📍 Uhingen</div>
+        <div class="standort-tab" id="ov-tab-esslingen" onclick="selectOverviewStandort('esslingen')">📍 Esslingen</div>
+      </div>
+      <div class="week-nav">
+        <button onclick="changeWeek(-1)">◀ Vorherige</button>
+        <span id="week-label"></span>
+        <button onclick="changeWeek(1)">Nächste ▶</button>
+      </div>
+      <div class="week-grid" id="week-grid"></div>
+      <div class="shift-detail" id="shift-detail" style="display:none">
+        <h3 id="detail-title"></h3>
+        <div>
+          <strong>✅ Fix-Fahrer:</strong>
+          <ul class="name-list" id="detail-fix-list"></ul>
+        </div>
+        <div style="margin-top:12px">
+          <strong>📞 Bereitschaft:</strong>
+          <ul class="name-list" id="detail-bereit-list"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <div class="page" id="page-admin">
+    <div class="card">
+      <h2>👨‍💼 Chef-Bereich</h2>
+      <div id="admin-login">
+        <div class="form-group">
+          <label>Passwort</label>
+          <input type="password" id="admin-pw" placeholder="Chef-Passwort" onkeydown="if(event.key==='Enter')adminLogin()" />
+        </div>
+        <button class="btn btn-primary" onclick="adminLogin()">Einloggen</button>
+      </div>
+      <div id="admin-content" style="display:none">
+        <div id="msg-admin" class="message"></div>
+        <div class="standort-tabs">
+          <div class="standort-tab active" id="adm-tab-uhingen" onclick="selectAdminStandort('uhingen')">📍 Uhingen</div>
+          <div class="standort-tab" id="adm-tab-esslingen" onclick="selectAdminStandort('esslingen')">📍 Esslingen</div>
+        </div>
+        <div class="week-nav">
+          <button onclick="changeAdminWeek(-1)">◀ Vorherige</button>
+          <span id="admin-week-label"></span>
+          <button onclick="changeAdminWeek(1)">Nächste ▶</button>
+        </div>
+        <div id="admin-shifts-table"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let currentStandort = 'uhingen';
+let overviewStandort = 'uhingen';
+let adminStandort = 'uhingen';
+let weekOffset = 0;
+let adminWeekOffset = 0;
+let allShifts = [];
+let adminPassword = '';
+let selectedDay = null;
+
+const DAYS = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const DAYS_FULL = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+
+function isFrSaSo(dateStr) {
+  const day = new Date(dateStr).getDay();
+  return day === 5 || day === 6 || day === 0;
+}
+
+function getEndTime(dateStr) {
+  return isFrSaSo(dateStr) ? '23:30' : '21:30';
+}
+
+function getMaxSlots(dateStr, standort) {
+  const extra = standort === 'esslingen' ? 1 : 0;
+  if (isFrSaSo(dateStr)) return { fix: 2 + extra, bereit: 1 + extra };
+  return { fix: 1 + extra, bereit: 1 + extra };
+}
+
+// Slot 1 fix = 16:15, all others = 17:15
+function slotStartTime(type, slotNumber) {
+  return (type === 'fix' && slotNumber === 1) ? '16:15' : '17:15';
+}
+
+function getWeekDates(offset) {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d.toISOString().split('T')[0];
+  });
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+// ===== NAVIGATION =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const idx = { register: 0, overview: 1, admin: 2 }[page];
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if (page === 'overview') loadOverview();
+  if (page === 'admin' && adminPassword) loadAdminShifts();
+}
+
+// ===== REGISTER PAGE =====
+function selectStandort(s) {
+  currentStandort = s;
+  document.getElementById('tab-uhingen').classList.toggle('active', s === 'uhingen');
+  document.getElementById('tab-esslingen').classList.toggle('active', s === 'esslingen');
+  updateTimeInfo();
+}
+
+function updateTimeInfo() {
+  const date = document.getElementById('reg-date').value;
+  const type = document.getElementById('reg-type').value;
+  if (!date) return;
+  const d = new Date(date);
+  if (d.getDay() === 2) return;
+
+  const box = document.getElementById('time-info-box');
+  const rows = document.getElementById('time-info-rows');
+  const end = getEndTime(date);
+  const max = getMaxSlots(date, currentStandort);
+
+  // Build rows for all possible slots
+  let html = '';
+  for (let i = 1; i <= max.fix; i++) {
+    const start = slotStartTime('fix', i);
+    html += `<div class="time-row">
+      <span class="slot-label">✅ Fix Fahrer ${i}:</span>
+      <span class="slot-time">${start} – ${end} Uhr</span>
+    </div>`;
+  }
+  for (let i = 1; i <= max.bereit; i++) {
+    html += `<div class="time-row">
+      <span class="slot-label">📞 Bereitschaft ${i}:</span>
+      <span class="slot-time">17:15 – ${end} Uhr</span>
+    </div>`;
+  }
+  rows.innerHTML = html;
+  box.style.display = 'block';
+}
+
+document.getElementById('reg-date').addEventListener('change', function() {
+  const d = new Date(this.value);
+  const closed = d.getDay() === 2;
+  document.getElementById('closed-warning').style.display = closed ? 'block' : 'none';
+  document.getElementById('type-group').style.display = closed ? 'none' : 'block';
+  document.getElementById('time-info-box').style.display = closed ? 'none' : 'block';
+  if (!closed) updateTimeInfo();
+});
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('reg-date').min = today;
+document.getElementById('reg-date').value = today;
+document.getElementById('reg-date').dispatchEvent(new Event('change'));
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'message ' + type;
+  setTimeout(() => { el.className = 'message'; el.textContent = ''; }, 5000);
+}
+
+async function registerShift() {
+  const name = document.getElementById('reg-name').value.trim();
+  const date = document.getElementById('reg-date').value;
+  const type = document.getElementById('reg-type').value;
+  if (!name) return showMsg('msg-register', 'Bitte deinen Namen eingeben!', 'error');
+  if (!date) return showMsg('msg-register', 'Bitte ein Datum wählen!', 'error');
+  if (new Date(date).getDay() === 2) return showMsg('msg-register', 'Dienstag ist Ruhetag!', 'error');
+
+  const res = await fetch('/api/shifts/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, standort: currentStandort, date, type })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    showMsg('msg-register', '✅ ' + data.message, 'success');
+    document.getElementById('reg-name').value = '';
+    updateTimeInfo();
+  } else {
+    showMsg('msg-register', '❌ ' + data.error, 'error');
+  }
+}
+
+async function unregisterShift() {
+  const name = document.getElementById('reg-name').value.trim();
+  const date = document.getElementById('reg-date').value;
+  const type = document.getElementById('reg-type').value;
+  if (!name) return showMsg('msg-register', 'Bitte deinen Namen eingeben!', 'error');
+
+  const res = await fetch('/api/shifts/unregister', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, standort: currentStandort, date, type })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    showMsg('msg-register', '✅ ' + data.message, 'success');
+    document.getElementById('reg-name').value = '';
+    updateTimeInfo();
+  } else {
+    showMsg('msg-register', '❌ ' + data.error, 'error');
+  }
+}
+
+// ===== OVERVIEW =====
+function selectOverviewStandort(s) {
+  overviewStandort = s;
+  document.getElementById('ov-tab-uhingen').classList.toggle('active', s === 'uhingen');
+  document.getElementById('ov-tab-esslingen').classList.toggle('active', s === 'esslingen');
+  document.getElementById('shift-detail').style.display = 'none';
+  selectedDay = null;
+  renderWeekGrid();
+}
+
+function changeWeek(dir) { weekOffset += dir; loadOverview(); }
+
+async function loadOverview() {
+  const res = await fetch('/api/shifts');
+  allShifts = await res.json();
+  renderWeekGrid();
+}
+
+function renderWeekGrid() {
+  const dates = getWeekDates(weekOffset);
+  document.getElementById('week-label').textContent =
+    `${formatDate(dates[0])} – ${formatDate(dates[6])}`;
+
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+
+  dates.forEach(dateStr => {
+    const d = new Date(dateStr);
+    const dayIdx = d.getDay();
+    const closed = dayIdx === 2;
+    const shifts = allShifts.filter(s => s.standort === overviewStandort && s.date === dateStr);
+    const fixList = shifts.filter(s => s.type === 'fix');
+    const bereitList = shifts.filter(s => s.type === 'bereitschaft');
+    const max = getMaxSlots(dateStr, overviewStandort);
+
+    const card = document.createElement('div');
+    card.className = 'day-card' + (closed ? ' closed' : '') + (selectedDay === dateStr ? ' selected' : '');
+    card.innerHTML = `
+      <div class="day-name">${DAYS[dayIdx]}</div>
+      <div class="day-date">${formatDate(dateStr)}</div>
+      ${closed
+        ? '<div style="color:#999;font-size:0.75em;margin-top:4px">Ruhetag</div>'
+        : `<div class="slots">
+            <span class="slot-badge ${fixList.length >= max.fix ? 'slot-full' : 'slot-fix'}">
+              ✅ ${fixList.length}/${max.fix}
+            </span><br/>
+            <span class="slot-badge ${bereitList.length >= max.bereit ? 'slot-full' : 'slot-bereit'}">
+              📞 ${bereitList.length}/${max.bereit}
+            </span>
+          </div>`
+      }
+    `;
+    if (!closed) card.onclick = () => showDayDetail(dateStr);
+    grid.appendChild(card);
+  });
+
+  if (selectedDay) showDayDetail(selectedDay);
+}
+
+function showDayDetail(dateStr) {
+  selectedDay = dateStr;
+  const d = new Date(dateStr);
+  const shifts = allShifts.filter(s => s.standort === overviewStandort && s.date === dateStr);
+  const fixList = shifts.filter(s => s.type === 'fix').sort((a,b) => a.slotNumber - b.slotNumber);
+  const bereitList = shifts.filter(s => s.type === 'bereitschaft').sort((a,b) => a.slotNumber - b.slotNumber);
+
+  document.getElementById('detail-title').textContent =
+    `${DAYS_FULL[d.getDay()]}, ${formatDate(dateStr)}`;
+
+  document.getElementById('detail-fix-list').innerHTML = fixList.length
+    ? fixList.map(s => `<li>
+        <span class="name-tag">${s.name}</span>
+        <span class="time-tag">⏰ ${s.startTime} – ${s.endTime} Uhr</span>
+      </li>`).join('')
+    : '<li style="color:#999">Noch niemand eingetragen</li>';
+
+  document.getElementById('detail-bereit-list').innerHTML = bereitList.length
+    ? bereitList.map(s => `<li>
+        <span class="name-tag">${s.name}</span>
+        <span class="time-tag">⏰ ${s.startTime} – ${s.endTime} Uhr</span>
+      </li>`).join('')
+    : '<li style="color:#999">Noch niemand eingetragen</li>';
+
+  document.getElementById('shift-detail').style.display = 'block';
+  renderWeekGrid();
+}
+
+// ===== ADMIN =====
+function selectAdminStandort(s) {
+  adminStandort = s;
+  document.getElementById('adm-tab-uhingen').classList.toggle('active', s === 'uhingen');
+  document.getElementById('adm-tab-esslingen').classList.toggle('active', s === 'esslingen');
+  renderAdminTable();
+}
+
+function changeAdminWeek(dir) { adminWeekOffset += dir; loadAdminShifts(); }
+
+async function adminLogin() {
+  const pw = document.getElementById('admin-pw').value;
+  const res = await fetch(`/api/admin/shifts?password=${encodeURIComponent(pw)}`);
+  if (res.ok) {
+    adminPassword = pw;
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    allShifts = await res.json();
+    renderAdminTable();
+  } else {
+    alert('Falsches Passwort!');
+  }
+}
+
+async function loadAdminShifts() {
+  const res = await fetch(`/api/admin/shifts?password=${encodeURIComponent(adminPassword)}`);
+  if (!res.ok) return;
+  allShifts = await res.json();
+  renderAdminTable();
+}
+
+function renderAdminTable() {
+  const dates = getWeekDates(adminWeekOffset);
+  document.getElementById('admin-week-label').textContent =
+    `${formatDate(dates[0])} – ${formatDate(dates[6])}`;
+
+  const container = document.getElementById('admin-shifts-table');
+  container.innerHTML = '';
+
+  dates.forEach(dateStr => {
+    const d = new Date(dateStr);
+    const dayIdx = d.getDay();
+    if (dayIdx === 2) return;
+    const dayShifts = allShifts
+      .filter(s => s.standort === adminStandort && s.date === dateStr)
+      .sort((a,b) => {
+        if (a.type !== b.type) return a.type === 'fix' ? -1 : 1;
+        return a.slotNumber - b.slotNumber;
+      });
+    if (!dayShifts.length) return;
+
+    const section = document.createElement('div');
+    section.style.marginBottom = '20px';
+    section.innerHTML = `
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:8px;font-size:1.05em">
+        ${DAYS_FULL[dayIdx]}, ${formatDate(dateStr)}
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:#fdf2f2;font-size:0.9em">
+            <th style="padding:8px;text-align:left;border-bottom:2px solid #eee">Name</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid #eee">Typ</th>
+            <th style="padding:8px;text-align:left;border-bottom:2px solid #eee">Zeit</th>
+            <th style="padding:8px;border-bottom:2px solid #eee"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${dayShifts.map(s => {
+            const globalIdx = allShifts.indexOf(s);
+            const badge = s.type === 'fix'
+              ? `<span style="background:#d4edda;color:#155724;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">✅ Fix ${s.slotNumber}</span>`
+              : `<span style="background:#fff3cd;color:#856404;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">📞 Bereitschaft</span>`;
+            return `<tr>
+              <td style="padding:8px;border-bottom:1px solid #f5f5f5;font-weight:bold">${s.name}</td>
+              <td style="padding:8px;border-bottom:1px solid #f5f5f5">${badge}</td>
+              <td style="padding:8px;border-bottom:1px solid #f5f5f5;color:#c0392b;font-size:0.9em">
+                ${s.startTime} – ${s.endTime} Uhr
+              </td>
+              <td style="padding:8px;border-bottom:1px solid #f5f5f5">
+                <button onclick="adminDelete(${globalIdx})"
+                  style="background:#e74c3c;color:white;border:none;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:0.85em">
+                  Löschen
+                </button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+    container.appendChild(section);
+  });
+
+  if (!container.innerHTML) {
+    container.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Keine Einträge für diese Woche</p>';
+  }
+}
+
+async function adminDelete(idx) {
+  if (!confirm('Eintrag wirklich löschen?')) return;
+  const res = await fetch(`/api/admin/shifts/${idx}?password=${encodeURIComponent(adminPassword)}`, {
+    method: 'DELETE'
+  });
+  if (res.ok) loadAdminShifts();
+  else alert('Fehler beim Löschen!');
+}
+
+// Init
+loadOverview();
+</script>
+</body>
+</html>
