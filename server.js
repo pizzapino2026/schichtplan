@@ -116,16 +116,22 @@ app.get('/kalender.ics', (req, res) => {
   const dtEnd   = `${yyyy}${mm}${dd}T${end.replace(':','')}00`;
   const standortName = standort ? standort.charAt(0).toUpperCase() + standort.slice(1) : '';
 
+  const uid = `${dtStart}-pizzapino-${Math.random().toString(36).substr(2,9)}@pizzapino.de`;
   const ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//Pizza Pino//Schichtplan//DE',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
     'BEGIN:VEVENT',
     `DTSTART:${dtStart}`,
     `DTEND:${dtEnd}`,
     `SUMMARY:🍕 Pizza Pino ${standortName}`,
     `DESCRIPTION:Fahrerschicht – ${name}`,
     `LOCATION:Pizza Pino ${standortName}`,
+    `UID:${uid}`,
+    'STATUS:CONFIRMED',
+    'TRANSP:OPAQUE',
     'END:VEVENT',
     'END:VCALENDAR'
   ].join('\r\n');
