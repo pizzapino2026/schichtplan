@@ -184,6 +184,19 @@ app.post('/api/shifts/register', async (req, res) => {
   const d = new Date(date);
   if (d.getDay() === 2) return res.status(400).json({ error: 'Dienstag ist Ruhetag' });
 
+  // Max 2 Kalenderwochen ab heute
+  const now = new Date();
+  const dow = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+  monday.setHours(0,0,0,0);
+  const maxDate = new Date(monday);
+  maxDate.setDate(monday.getDate() + 20); // Ende KW+2 (Sonntag)
+  maxDate.setHours(23,59,59,999);
+  if (d > maxDate) {
+    return res.status(400).json({ error: '⛔ Eintragungen sind nur für die aktuelle KW und die nächsten 2 Kalenderwochen möglich.' });
+  }
+
   try {
     const db = await getDb();
 
