@@ -655,7 +655,7 @@ function renderOpenShifts() {
   endDate.setDate(endDate.getDate() + openWeeks * 7);
   const endStr = endDate.toISOString().split('T')[0];
 
-  let hasOpen = false;
+  let hasAny = false;
   const current = new Date(todayStr);
 
   while (current.toISOString().split('T')[0] <= endStr) {
@@ -664,55 +664,79 @@ function renderOpenShifts() {
     const dayOfWeek = d.getDay();
     current.setDate(current.getDate() + 1);
 
-    if (dayOfWeek === 2) continue; // skip Tuesday
+    if (dayOfWeek === 2) continue;
 
     const shifts = allShifts.filter(s => s.standort === openStandort && s.date === dateStr);
-    const fixList = shifts.filter(s => s.type === 'fix');
-    const bereitList = shifts.filter(s => s.type === 'bereitschaft');
+    const fixList = shifts.filter(s => s.type === 'fix').sort((a,b) => a.slotNumber - b.slotNumber);
+    const bereitList = shifts.filter(s => s.type === 'bereitschaft').sort((a,b) => a.slotNumber - b.slotNumber);
     const max = getMaxSlots(dateStr, openStandort);
     const end = getEndTime(dateStr);
 
     const openFix = max.fix - fixList.length;
     const openBereit = max.bereit - bereitList.length;
+    const totalOpen = openFix + openBereit;
 
-    if (openFix <= 0 && openBereit <= 0) continue;
-    hasOpen = true;
+    hasAny = true;
 
     const div = document.createElement('div');
     div.className = 'open-day';
+    div.style.borderColor = totalOpen === 0 ? '#27ae60' : '#ffeaa7';
+    div.style.background = totalOpen === 0 ? '#f0fff4' : '#fffdf0';
+
     let slotsHtml = '';
 
-    for (let i = fixList.length + 1; i <= max.fix; i++) {
+    // Fix slots – show name if filled, show "offen" if not
+    for (let i = 1; i <= max.fix; i++) {
+      const filled = fixList.find(s => s.slotNumber === i);
       const start = slotStartTime('fix', i);
-      slotsHtml += `<div class="open-slot">
-        <div class="open-dot"></div>
-        <span>✅ Fix Fahrer ${i} – <strong>${start} – ${end} Uhr</strong></span>
-        <span style="margin-left:auto;cursor:pointer;color:#c0392b;font-size:0.85em"
-          onclick="quickRegister('${dateStr}','fix')">Eintragen →</span>
-      </div>`;
+      if (filled) {
+        slotsHtml += `<div class="open-slot">
+          <div style="width:8px;height:8px;border-radius:50%;background:#27ae60;flex-shrink:0"></div>
+          <span>✅ Fix Fahrer ${i} – <strong>${start} – ${end} Uhr</strong></span>
+          <span style="margin-left:auto;font-weight:bold;color:#27ae60;font-size:0.88em">👤 ${filled.name}</span>
+        </div>`;
+      } else {
+        slotsHtml += `<div class="open-slot">
+          <div class="open-dot"></div>
+          <span>✅ Fix Fahrer ${i} – <strong>${start} – ${end} Uhr</strong></span>
+          <span style="margin-left:auto;cursor:pointer;color:#c0392b;font-size:0.85em;font-weight:bold"
+            onclick="quickRegister('${dateStr}','fix')">Eintragen →</span>
+        </div>`;
+      }
     }
-    for (let i = bereitList.length + 1; i <= max.bereit; i++) {
-      slotsHtml += `<div class="open-slot">
-        <div class="open-dot bereit"></div>
-        <span>📞 Bereitschaft – <strong>17:15 – ${end} Uhr</strong></span>
-        <span style="margin-left:auto;cursor:pointer;color:#c0392b;font-size:0.85em"
-          onclick="quickRegister('${dateStr}','bereitschaft')">Eintragen →</span>
-      </div>`;
+
+    // Bereitschaft – show name if filled, show "offen" if not
+    for (let i = 1; i <= max.bereit; i++) {
+      const filled = bereitList.find(s => s.slotNumber === i);
+      if (filled) {
+        slotsHtml += `<div class="open-slot">
+          <div style="width:8px;height:8px;border-radius:50%;background:#27ae60;flex-shrink:0"></div>
+          <span>📞 Bereitschaft – <strong>17:15 – ${end} Uhr</strong></span>
+          <span style="margin-left:auto;font-weight:bold;color:#27ae60;font-size:0.88em">👤 ${filled.name}</span>
+        </div>`;
+      } else {
+        slotsHtml += `<div class="open-slot">
+          <div class="open-dot bereit"></div>
+          <span>📞 Bereitschaft – <strong>17:15 – ${end} Uhr</strong></span>
+          <span style="margin-left:auto;cursor:pointer;color:#c0392b;font-size:0.85em;font-weight:bold"
+            onclick="quickRegister('${dateStr}','bereitschaft')">Eintragen →</span>
+        </div>`;
+      }
     }
 
     div.innerHTML = `
       <div class="open-day-title">
         ${DAYS_FULL[dayOfWeek]}, ${formatDate(dateStr)}
-        <span style="font-weight:normal;color:#888;font-size:0.85em">
-          — ${openFix + openBereit} Platz/Plätze offen
+        <span style="margin-left:8px;font-weight:normal;font-size:0.85em;color:${totalOpen === 0 ? '#27ae60' : '#e74c3c'}">
+          ${totalOpen === 0 ? '✅ Vollständig besetzt' : `— ${totalOpen} Platz/Plätze offen`}
         </span>
       </div>
       ${slotsHtml}`;
     container.appendChild(div);
   }
 
-  if (!hasOpen) {
-    container.innerHTML = '<div class="all-filled">✅ Alle Schichten sind besetzt!</div>';
+  if (!hasAny) {
+    container.innerHTML = '<div class="all-filled">✅ Keine Schichten in diesem Zeitraum</div>';
   }
 }
 
