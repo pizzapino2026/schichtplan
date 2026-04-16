@@ -262,6 +262,12 @@
 
       <button class="btn btn-primary" onclick="registerShift()">Eintragen 🍕</button>
       <button class="btn btn-secondary" onclick="unregisterShift()">Austragen ❌</button>
+
+      <a id="cal-add-btn" href="#" target="_blank" style="display:none;margin-top:12px;text-decoration:none">
+        <button class="btn" style="background:#27ae60;color:white">
+          📅 Schicht zum Kalender hinzufügen
+        </button>
+      </a>
     </div>
   </div>
 
@@ -462,6 +468,12 @@ async function registerShift() {
     showMsg('msg-register', '✅ ' + data.message, 'success');
     document.getElementById('reg-name').value = '';
     updateTimeInfo();
+    // Show calendar button
+    if (data.calLink) {
+      const calBtn = document.getElementById('cal-add-btn');
+      calBtn.href = data.calLink;
+      calBtn.style.display = 'block';
+    }
   } else {
     showMsg('msg-register', '❌ ' + data.error, 'error');
   }
@@ -480,6 +492,7 @@ async function unregisterShift() {
   if (res.ok) {
     showMsg('msg-register', '✅ ' + data.message, 'success');
     document.getElementById('reg-name').value = '';
+    document.getElementById('cal-add-btn').style.display = 'none';
   } else {
     showMsg('msg-register', '❌ ' + data.error, 'error');
   }
