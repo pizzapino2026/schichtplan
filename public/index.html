@@ -234,6 +234,11 @@
       </div>
 
       <div class="form-group">
+        <label for="reg-phone">📱 Handynummer <span style="font-weight:normal;color:#888">(für WhatsApp Bestätigung)</span></label>
+        <input type="tel" id="reg-phone" placeholder="z.B. 0171 1234567" />
+      </div>
+
+      <div class="form-group">
         <label for="reg-date">Datum</label>
         <input type="date" id="reg-date" />
       </div>
@@ -442,6 +447,7 @@ function showMsg(id, text, type) {
 
 async function registerShift() {
   const name = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
   const date = document.getElementById('reg-date').value;
   const type = document.getElementById('reg-type').value;
   if (!name) return showMsg('msg-register', 'Bitte deinen Namen eingeben!', 'error');
@@ -449,7 +455,7 @@ async function registerShift() {
   if (isTuesday(date)) return showMsg('msg-register', 'Dienstag ist Ruhetag!', 'error');
   const res = await fetch('/api/shifts/register', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, standort: regStandort, date, type })
+    body: JSON.stringify({ name, standort: regStandort, date, type, phone })
   });
   const data = await res.json();
   if (res.ok) {
