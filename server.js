@@ -1,10 +1,17 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const querystring = require('querystring');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
+
+// Twilio config from environment variables
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || '';
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || '';
+const TWILIO_WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -22,7 +29,7 @@ function saveData(data) {
 
 function getMaxSlots(dateStr, standort) {
   const d = new Date(dateStr);
-  const day = d.getDay(); // 0=Sun,1=Mon,...6=Sat
+  const day = d.getDay();
   const extraFix = standort === 'esslingen' ? 1 : 0;
   if (day === 5 || day === 6 || day === 0) {
     return { fix: 2 + extraFix, bereit: 1 };
@@ -30,10 +37,6 @@ function getMaxSlots(dateStr, standort) {
   return { fix: 1 + extraFix, bereit: 1 };
 }
 
-// Shift time based on slot position:
-// fix slot 1 → 16:15 Uhr
-// fix slot 2+, bereitschaft → 17:15 Uhr
-// End times: Mo-Do 21:30, Fr-Sa-So 23:30
 function getSlotTime(dateStr, type, slotNumber) {
   const d = new Date(dateStr);
   const day = d.getDay();
@@ -44,15 +47,78 @@ function getSlotTime(dateStr, type, slotNumber) {
   return { start: '17:15', end: endTime };
 }
 
+// Format date as "Montag, 21.04.2026"
+function formatDateLong(dateStr) {
+  const DAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const d = new Date(dateStr);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  return `${DAYS[d.getDay()]}, ${dd}.${mm}.${yyyy}`;
+}
+
+// Build Google Calendar link
+function buildCalendarLink(name, standort, dateStr, startTime, endTime) {
+  const d = new Date(dateStr);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const startHour = startTime.replace(':', '');
+  const endHour = endTime.replace(':', '');
+  const dtStart = `${yyyy}${mm}${dd}T${startHour}00`;
+  const dtEnd = `${yyyy}${mm}${dd}T${endHour}00`;
+  const title = encodeURIComponent(`🍕 Pizza Pino ${standort.charAt(0).toUpperCase()+standort.slice(1)}`);
+  const details = encodeURIComponent(`Fahrerschicht – ${name}`);
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dtStart}/${dtEnd}&details=${details}`;
+}
+
+// Send WhatsApp message via Twilio
+function sendWhatsApp(toNumber, message) {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    console.log('[WhatsApp] Twilio not configured, skipping.');
+    return;
+  }
+
+  // Normalize number: remove spaces, dashes; ensure +49 format
+  let num = toNumber.replace(/[\s\-\(\)]/g, '');
+  if (num.startsWith('0')) num = '+49' + num.slice(1);
+  if (!num.startsWith('+')) num = '+49' + num;
+
+  const postData = querystring.stringify({
+    From: TWILIO_WHATSAPP_FROM,
+    To: `whatsapp:${num}`,
+    Body: message
+  });
+
+  const options = {
+    hostname: 'api.twilio.com',
+    path: `/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+    method: 'POST',
+    auth: `${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+
+  const req = https.request(options, (res) => {
+    let body = '';
+    res.on('data', chunk => body += chunk);
+    res.on('end', () => console.log('[WhatsApp] Sent:', res.statusCode));
+  });
+  req.on('error', e => console.error('[WhatsApp] Error:', e.message));
+  req.write(postData);
+  req.end();
+}
+
 // GET all shifts
 app.get('/api/shifts', (req, res) => {
-  const data = loadData();
-  res.json(data.shifts);
+  res.json(loadData().shifts);
 });
 
 // POST register
 app.post('/api/shifts/register', (req, res) => {
-  const { name, standort, date, type } = req.body;
+  const { name, standort, date, type, phone } = req.body;
 
   if (!name || !standort || !date || !type) {
     return res.status(400).json({ error: 'Alle Felder sind erforderlich' });
@@ -65,12 +131,9 @@ app.post('/api/shifts/register', (req, res) => {
 
   const data = loadData();
 
-  // Duplicate check
   const existing = data.shifts.find(
     s => s.name.toLowerCase() === name.toLowerCase() &&
-         s.standort === standort &&
-         s.date === date &&
-         s.type === type
+         s.standort === standort && s.date === date && s.type === type
   );
   if (existing) {
     return res.status(409).json({ error: 'Du bist für diese Schicht bereits eingetragen' });
@@ -88,23 +151,32 @@ app.post('/api/shifts/register', (req, res) => {
     return res.status(409).json({ error: `Alle Bereitschafts-Plätze vergeben (max. ${max.bereit})` });
   }
 
-  // Determine slot number (1-based within type)
   const slotNumber = type === 'fix' ? fixSlots.length + 1 : bereitSlots.length + 1;
   const time = getSlotTime(date, type, slotNumber);
 
   data.shifts.push({
-    name,
-    standort,
-    date,
-    type,
-    slotNumber,
-    startTime: time.start,
-    endTime: time.end,
+    name, standort, date, type, slotNumber,
+    startTime: time.start, endTime: time.end,
+    phone: phone || '',
     createdAt: new Date().toISOString()
   });
   saveData(data);
 
-  res.json({ success: true, message: `Erfolgreich eingetragen! Deine Schicht: ${time.start} – ${time.end} Uhr` });
+  // Send WhatsApp if phone provided
+  if (phone) {
+    const dateLong = formatDateLong(date);
+    const calLink = buildCalendarLink(name, standort, date, time.start, time.end);
+    const standortName = standort.charAt(0).toUpperCase() + standort.slice(1);
+    const typeLabel = type === 'fix' ? '✅ Fix-Fahrer' : '📞 Bereitschaft';
+
+    const msg = `🍕 *Pizza Pino ${standortName}*\n\nHallo ${name}! Du bist eingetragen:\n\n📅 ${dateLong}\n⏰ ${time.start} – ${time.end} Uhr\n👤 ${typeLabel}\n\n➕ Zum Kalender hinzufügen:\n${calLink}\n\n_Pizza Pino Schichtplan_`;
+    sendWhatsApp(phone, msg);
+  }
+
+  res.json({
+    success: true,
+    message: `Erfolgreich eingetragen! Deine Schicht: ${time.start} – ${time.end} Uhr${phone ? ' – WhatsApp wird gesendet 📱' : ''}`
+  });
 });
 
 // DELETE unregister
@@ -114,24 +186,18 @@ app.delete('/api/shifts/unregister', (req, res) => {
 
   const index = data.shifts.findIndex(
     s => s.name.toLowerCase() === name.toLowerCase() &&
-         s.standort === standort &&
-         s.date === date &&
-         s.type === type
+         s.standort === standort && s.date === date && s.type === type
   );
-
   if (index === -1) {
     return res.status(404).json({ error: 'Eintrag nicht gefunden' });
   }
 
   data.shifts.splice(index, 1);
-
-  // Recalculate slot numbers for remaining entries of same day/standort/type
   const remaining = data.shifts.filter(s => s.standort === standort && s.date === date && s.type === type);
   remaining.forEach((s, i) => {
     s.slotNumber = i + 1;
     const t = getSlotTime(date, type, i + 1);
-    s.startTime = t.start;
-    s.endTime = t.end;
+    s.startTime = t.start; s.endTime = t.end;
   });
 
   saveData(data);
@@ -140,8 +206,7 @@ app.delete('/api/shifts/unregister', (req, res) => {
 
 // Admin: GET all shifts
 app.get('/api/admin/shifts', (req, res) => {
-  const { password } = req.query;
-  if (password !== 'pizzapino2024') {
+  if (req.query.password !== 'pizzapino2024') {
     return res.status(401).json({ error: 'Falsches Passwort' });
   }
   res.json(loadData().shifts);
@@ -149,8 +214,7 @@ app.get('/api/admin/shifts', (req, res) => {
 
 // Admin: DELETE by index
 app.delete('/api/admin/shifts/:index', (req, res) => {
-  const { password } = req.query;
-  if (password !== 'pizzapino2024') {
+  if (req.query.password !== 'pizzapino2024') {
     return res.status(401).json({ error: 'Falsches Passwort' });
   }
   const data = loadData();
@@ -158,21 +222,16 @@ app.delete('/api/admin/shifts/:index', (req, res) => {
   if (idx < 0 || idx >= data.shifts.length) {
     return res.status(404).json({ error: 'Nicht gefunden' });
   }
-
   const removed = data.shifts[idx];
   data.shifts.splice(idx, 1);
-
-  // Recalculate slots
   const remaining = data.shifts.filter(
     s => s.standort === removed.standort && s.date === removed.date && s.type === removed.type
   );
   remaining.forEach((s, i) => {
     s.slotNumber = i + 1;
     const t = getSlotTime(removed.date, removed.type, i + 1);
-    s.startTime = t.start;
-    s.endTime = t.end;
+    s.startTime = t.start; s.endTime = t.end;
   });
-
   saveData(data);
   res.json({ success: true });
 });
