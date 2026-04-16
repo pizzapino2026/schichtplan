@@ -362,10 +362,10 @@ function isFrSaSo(dateStr) {
 function isTuesday(dateStr) { return new Date(dateStr).getDay() === 2; }
 function getEndTime(dateStr) { return isFrSaSo(dateStr) ? '23:30' : '21:30'; }
 function getMaxSlots(dateStr, standort) {
-  const extra = standort === 'esslingen' ? 1 : 0;
+  const extraFix = standort === 'esslingen' ? 1 : 0;
   return isFrSaSo(dateStr)
-    ? { fix: 2 + extra, bereit: 1 + extra }
-    : { fix: 1 + extra, bereit: 1 + extra };
+    ? { fix: 2 + extraFix, bereit: 1 }
+    : { fix: 1 + extraFix, bereit: 1 };
 }
 function slotStartTime(type, slotNumber) {
   return (type === 'fix' && slotNumber === 1) ? '16:15' : '17:15';
