@@ -14,6 +14,9 @@ const TWILIO_WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+1415
 const DATABASE_URL = process.env.DATABASE_URL || '';
 const APP_URL = process.env.APP_URL || 'https://schichtplan-ufys.onrender.com';
 
+// Chef-Benachrichtigungen bei jeder Eintragung/Austragung
+const CHEF_NUMBERS = ['+4915901395627', '+4916607746498'];
+
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 
@@ -73,6 +76,10 @@ function buildCalendarLink(name, standort, dateStr, startTime, endTime) {
 
 function normalize(str) {
   return str.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function notifyChefs(message) {
+  CHEF_NUMBERS.forEach(num => sendWhatsApp(num, message));
 }
 
 function sendWhatsApp(toNumber, message) {
@@ -217,6 +224,12 @@ app.post('/api/shifts/register', async (req, res) => {
       sendWhatsApp(phone, msg);
     }
 
+    // Chef-Benachrichtigung
+    const standortName = standort.charAt(0).toUpperCase() + standort.slice(1);
+    const typeLabel = type === 'fix' ? '✅ Fix-Fahrer' : '📞 Bereitschaft';
+    const chefMsg = `🍕 *Pizza Pino ${standortName} – Neue Eintragung*\n\n👤 ${name}\n📅 ${formatDateLong(date)}\n⏰ ${time.start} – ${time.end} Uhr\n${typeLabel}`;
+    notifyChefs(chefMsg);
+
     const calLink = buildCalendarLink(name, standort, date, time.start, time.end);
     res.json({
       success: true,
@@ -253,6 +266,13 @@ app.delete('/api/shifts/unregister', async (req, res) => {
         [slotNumber, time.start, time.end, remaining.rows[i].id]
       );
     }
+
+    // Chef-Benachrichtigung
+    const removed = result.rows[0];
+    const standortName2 = removed.standort.charAt(0).toUpperCase() + removed.standort.slice(1);
+    const typeLabel2 = removed.type === 'fix' ? '✅ Fix-Fahrer' : '📞 Bereitschaft';
+    const chefMsg2 = `⚠️ *Pizza Pino ${standortName2} – Austragung*\n\n👤 ${removed.name}\n📅 ${formatDateLong(removed.date)}\n⏰ ${removed.start_time} – ${removed.end_time} Uhr\n${typeLabel2}`;
+    notifyChefs(chefMsg2);
 
     res.json({ success: true, message: 'Erfolgreich ausgetragen!' });
   } catch (e) {
