@@ -1,12 +1,15 @@
-{
-  "name": "pizza-pino-schichtplan",
-  "version": "1.0.0",
-  "description": "Schichtplan App für Pizza Pino Uhingen & Esslingen",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
-}
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"pizza-pino-schichtplan"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"1.0.0"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"description"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Schichtplan App für Pizza Pino Uhingen & Esslingen"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"main"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"server.js"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"scripts"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"start"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"node server.js"</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"dependencies"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"express"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"^4.18.2"</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"engines"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"node"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">">=18.0.0"</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
