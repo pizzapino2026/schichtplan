@@ -57,19 +57,10 @@ function formatDateLong(dateStr) {
   return `${DAYS[d.getDay()]}, ${dd}.${mm}.${yyyy}`;
 }
 
-// Build Google Calendar link
+// Build ICS calendar download URL
 function buildCalendarLink(name, standort, dateStr, startTime, endTime) {
-  const d = new Date(dateStr);
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  const startHour = startTime.replace(':', '');
-  const endHour = endTime.replace(':', '');
-  const dtStart = `${yyyy}${mm}${dd}T${startHour}00`;
-  const dtEnd = `${yyyy}${mm}${dd}T${endHour}00`;
-  const title = encodeURIComponent(`🍕 Pizza Pino ${standort.charAt(0).toUpperCase()+standort.slice(1)}`);
-  const details = encodeURIComponent(`Fahrerschicht – ${name}`);
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dtStart}/${dtEnd}&details=${details}`;
+  const params = new URLSearchParams({ name, standort, date: dateStr, start: startTime, end: endTime });
+  return `https://schichtplan-ufys.onrender.com/kalender.ics?${params.toString()}`;
 }
 
 // Send WhatsApp message via Twilio
@@ -110,6 +101,39 @@ function sendWhatsApp(toNumber, message) {
   req.write(postData);
   req.end();
 }
+
+// GET ICS calendar file - opens native calendar app on any device
+app.get('/kalender.ics', (req, res) => {
+  const { name, standort, date, start, end } = req.query;
+  if (!name || !date || !start || !end) {
+    return res.status(400).send('Fehlende Parameter');
+  }
+  const d = new Date(date);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const dtStart = `${yyyy}${mm}${dd}T${start.replace(':','')}00`;
+  const dtEnd   = `${yyyy}${mm}${dd}T${end.replace(':','')}00`;
+  const standortName = standort ? standort.charAt(0).toUpperCase() + standort.slice(1) : '';
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Pizza Pino//Schichtplan//DE',
+    'BEGIN:VEVENT',
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:🍕 Pizza Pino ${standortName}`,
+    `DESCRIPTION:Fahrerschicht – ${name}`,
+    `LOCATION:Pizza Pino ${standortName}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="schicht-${date}.ics"`);
+  res.send(ics);
+});
 
 // GET all shifts
 app.get('/api/shifts', (req, res) => {
@@ -169,7 +193,7 @@ app.post('/api/shifts/register', (req, res) => {
     const standortName = standort.charAt(0).toUpperCase() + standort.slice(1);
     const typeLabel = type === 'fix' ? '✅ Fix-Fahrer' : '📞 Bereitschaft';
 
-    const msg = `🍕 *Pizza Pino ${standortName}*\n\nHallo ${name}! Du bist eingetragen:\n\n📅 ${dateLong}\n⏰ ${time.start} – ${time.end} Uhr\n👤 ${typeLabel}\n\n➕ Zum Kalender hinzufügen:\n${calLink}\n\n_Pizza Pino Schichtplan_`;
+    const msg = `🍕 *Pizza Pino ${standortName}*\n\nHallo ${name}! Du bist eingetragen:\n\n📅 ${dateLong}\n⏰ ${time.start} – ${time.end} Uhr\n👤 ${typeLabel}\n\n📲 Schicht im Kalender speichern:\n${calLink}\n\n_Pizza Pino Schichtplan_`;
     sendWhatsApp(phone, msg);
   }
 
