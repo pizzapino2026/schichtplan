@@ -441,7 +441,20 @@ document.getElementById('reg-date').addEventListener('change', function() {
 });
 
 const today = new Date().toISOString().split('T')[0];
+
+// Max date: Ende KW+2 (aktuelle KW + 2 weitere KWs)
+// Bsp: KW20 → bis Ende KW22 (Sonntag)
+const nowD = new Date();
+const dayOfWeek = nowD.getDay();
+const monday = new Date(nowD);
+monday.setDate(nowD.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+monday.setHours(0,0,0,0);
+const maxDate = new Date(monday);
+maxDate.setDate(monday.getDate() + 20); // +3 Wochen - 1 Tag = Ende KW+2 (Sonntag)
+const maxDateStr = maxDate.toISOString().split('T')[0];
+
 document.getElementById('reg-date').min = today;
+document.getElementById('reg-date').max = maxDateStr;
 document.getElementById('reg-date').value = today;
 document.getElementById('reg-date').dispatchEvent(new Event('change'));
 
