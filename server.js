@@ -23,11 +23,11 @@ function saveData(data) {
 function getMaxSlots(dateStr, standort) {
   const d = new Date(dateStr);
   const day = d.getDay(); // 0=Sun,1=Mon,...6=Sat
-  const extra = standort === 'esslingen' ? 1 : 0;
+  const extraFix = standort === 'esslingen' ? 1 : 0;
   if (day === 5 || day === 6 || day === 0) {
-    return { fix: 2 + extra, bereit: 1 + extra };
+    return { fix: 2 + extraFix, bereit: 1 };
   }
-  return { fix: 1 + extra, bereit: 1 + extra };
+  return { fix: 1 + extraFix, bereit: 1 };
 }
 
 // Shift time based on slot position:
