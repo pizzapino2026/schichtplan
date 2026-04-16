@@ -200,6 +200,25 @@ app.post('/api/shifts/register', async (req, res) => {
   try {
     const db = await getDb();
 
+    // Max 3 Eintragungen pro Fahrer pro Kalenderwoche
+    const weekMonday = new Date(d);
+    const wd = d.getDay();
+    weekMonday.setDate(d.getDate() - (wd === 0 ? 6 : wd - 1));
+    weekMonday.setHours(0,0,0,0);
+    const weekSunday = new Date(weekMonday);
+    weekSunday.setDate(weekMonday.getDate() + 6);
+    weekSunday.setHours(23,59,59,999);
+    const mondayStr = weekMonday.toISOString().split('T')[0];
+    const sundayStr = weekSunday.toISOString().split('T')[0];
+
+    const weekCount = await db.query(
+      `SELECT COUNT(*) FROM shifts WHERE LOWER(TRIM(name))=$1 AND standort=$2 AND date >= $3 AND date <= $4`,
+      [normalize(name), standort, mondayStr, sundayStr]
+    );
+    if (parseInt(weekCount.rows[0].count) >= 3) {
+      return res.status(409).json({ error: `⛔ ${name} ist diese Woche bereits 3x eingetragen – maximale Eintragungen pro Woche erreicht.` });
+    }
+
     // Duplicate check
     const dup = await db.query(
       'SELECT id FROM shifts WHERE LOWER(TRIM(name))=$1 AND standort=$2 AND date=$3 AND type=$4',
@@ -314,6 +333,56 @@ app.get('/api/admin/shifts', async (req, res) => {
     }));
     res.json(shifts);
   } catch (e) {
+    res.status(500).json({ error: 'Datenbankfehler' });
+  }
+});
+
+// ===== ADMIN MANUAL ASSIGN =====
+app.post('/api/admin/shifts/assign', async (req, res) => {
+  const { password, name, phone, standort, date, type } = req.body;
+  if (password !== 'pizzapino2024') return res.status(401).json({ error: 'Falsches Passwort' });
+  if (!name || !standort || !date || !type) return res.status(400).json({ error: 'Fehlende Felder' });
+
+  try {
+    const db = await getDb();
+
+    // Duplicate check
+    const dup = await db.query(
+      'SELECT id FROM shifts WHERE LOWER(TRIM(name))=$1 AND standort=$2 AND date=$3 AND type=$4',
+      [normalize(name), standort, date, type]
+    );
+    if (dup.rows.length > 0) return res.status(409).json({ error: `${name} ist für diese Schicht bereits eingetragen!` });
+
+    // Capacity check
+    const fixRes = await db.query('SELECT COUNT(*) FROM shifts WHERE standort=$1 AND date=$2 AND type=$3', [standort, date, 'fix']);
+    const bereitRes = await db.query('SELECT COUNT(*) FROM shifts WHERE standort=$1 AND date=$2 AND type=$3', [standort, date, 'bereitschaft']);
+    const fixCount = parseInt(fixRes.rows[0].count);
+    const bereitCount = parseInt(bereitRes.rows[0].count);
+    const max = getMaxSlots(date, standort);
+
+    if (type === 'fix' && fixCount >= max.fix) return res.status(409).json({ error: 'Alle Fix-Plätze bereits vergeben' });
+    if (type === 'bereitschaft' && bereitCount >= max.bereit) return res.status(409).json({ error: 'Bereitschafts-Platz bereits vergeben' });
+
+    const slotNumber = type === 'fix' ? fixCount + 1 : bereitCount + 1;
+    const time = getSlotTime(date, type, slotNumber);
+
+    await db.query(
+      'INSERT INTO shifts (name, standort, date, type, slot_number, start_time, end_time, phone) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+      [name, standort, date, type, slotNumber, time.start, time.end, phone || '']
+    );
+
+    // WhatsApp an Fahrer
+    if (phone) {
+      const standortName = standort.charAt(0).toUpperCase() + standort.slice(1);
+      const typeLabel = type === 'fix' ? '✅ Fix-Fahrer' : '📞 Bereitschaft';
+      const calLink = buildCalendarLink(name, standort, date, time.start, time.end);
+      const msg = `🍕 *Pizza Pino ${standortName}*\n\nHallo ${name}! Du wurdest vom Chef eingetragen:\n\n📅 ${formatDateLong(date)}\n⏰ ${time.start} – ${time.end} Uhr\n👤 ${typeLabel}\n\n📅 Zum Kalender:\n${calLink}`;
+      sendWhatsApp(phone, msg);
+    }
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Datenbankfehler' });
   }
 });
