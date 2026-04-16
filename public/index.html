@@ -14,31 +14,18 @@
     }
     .container { max-width: 960px; margin: 0 auto; }
 
-    header {
-      text-align: center;
-      padding: 25px 0 20px;
-      color: white;
-    }
+    header { text-align: center; padding: 25px 0 20px; color: white; }
     header .logo-wrap { margin-bottom: 10px; }
     header .logo-wrap img {
-      height: 70px;
-      object-fit: contain;
+      height: 70px; object-fit: contain;
       filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.5));
     }
-    header .logo-text {
-      font-size: 2em;
-      font-weight: 900;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
-      letter-spacing: 1px;
-    }
+    header .logo-text { font-size: 2em; font-weight: 900; text-shadow: 2px 2px 6px rgba(0,0,0,0.5); letter-spacing: 1px; }
     header p { font-size: 0.95em; opacity: 0.85; margin-top: 4px; }
 
-    .nav-tabs {
-      display: flex; justify-content: center; gap: 8px; margin-bottom: 22px; flex-wrap: wrap;
-    }
+    .nav-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
     .nav-tab {
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4);
       color: white; padding: 9px 20px; border-radius: 25px;
       cursor: pointer; font-size: 0.95em; font-weight: bold; transition: all 0.2s;
     }
@@ -94,114 +81,98 @@
     .time-info-box .slot-label { font-weight: bold; min-width: 150px; color: #555; }
     .time-info-box .slot-time { color: #c0392b; font-weight: bold; }
 
-    /* ===== CALENDAR ===== */
-    .cal-nav {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
-    }
+    /* CALENDAR */
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .cal-nav button {
-      background: #c0392b; color: white; border: none;
-      border-radius: 8px; padding: 8px 18px; cursor: pointer; font-size: 0.95em; font-weight: bold;
+      background: #f5f5f5; border: 2px solid #ddd; padding: 6px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold;
     }
-    .cal-nav span { font-weight: bold; font-size: 1.15em; color: #333; }
-
+    .cal-nav button:hover { background: #c0392b; color: white; border-color: #c0392b; }
+    .cal-nav span { font-weight: bold; color: #333; font-size: 1.05em; }
     .cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 4px; margin-bottom: 16px;
     }
     .cal-header-cell {
-      text-align: center; font-weight: bold; color: #888;
-      font-size: 0.8em; padding: 6px 0;
+      text-align: center; font-size: 0.75em; font-weight: bold;
+      color: #888; padding: 4px 0;
     }
     .cal-cell {
-      border: 2px solid #f0f0f0; border-radius: 8px; padding: 6px;
-      min-height: 70px; cursor: pointer; transition: all 0.2s; position: relative;
+      border: 2px solid #e0e0e0; border-radius: 8px; padding: 5px 4px;
+      min-height: 60px; cursor: pointer; transition: all 0.15s;
+      background: white; position: relative;
     }
     .cal-cell:hover { border-color: #c0392b; background: #fdf2f2; }
-    .cal-cell.empty { background: #fafafa; cursor: default; border-color: transparent; }
-    .cal-cell.closed { background: #f5f5f5; cursor: default; opacity: 0.5; }
-    .cal-cell.today { border-color: #f39c12; background: #fffde7; }
-    .cal-cell.selected { border-color: #c0392b; background: #fdf2f2; box-shadow: 0 0 0 2px #c0392b33; }
-    .cal-cell.past { opacity: 0.55; }
-
-    .cal-day-num {
-      font-size: 0.85em; font-weight: bold; color: #333; margin-bottom: 4px;
-    }
-    .cal-cell.closed .cal-day-num { color: #bbb; }
-
+    .cal-cell.closed { background: #f5f5f5; cursor: default; border-color: #e5e5e5; }
+    .cal-cell.today { border-color: #c0392b; background: #fdf2f2; }
+    .cal-cell.selected { border-color: #c0392b; background: #fdf2f2; box-shadow: 0 0 0 2px #c0392b; }
+    .cal-cell.past { opacity: 0.5; }
+    .cal-cell.empty { border: none; background: transparent; cursor: default; }
+    .cal-day-num { font-size: 0.85em; font-weight: bold; color: #333; margin-bottom: 3px; }
     .cal-badges { display: flex; flex-direction: column; gap: 2px; }
-    .cal-badge {
-      font-size: 0.68em; padding: 1px 5px; border-radius: 5px;
-      font-weight: bold; white-space: nowrap;
-    }
+    .cal-badge { font-size: 0.65em; padding: 1px 4px; border-radius: 4px; white-space: nowrap; }
     .badge-fix-ok { background: #d4edda; color: #155724; }
-    .badge-fix-full { background: #f8d7da; color: #721c24; }
+    .badge-fix-full { background: #c0392b; color: white; }
     .badge-bereit-ok { background: #fff3cd; color: #856404; }
-    .badge-bereit-full { background: #f8d7da; color: #721c24; }
-    .badge-open { background: #ffeaa7; color: #c0392b; }
-
-    /* Day detail panel */
+    .badge-bereit-full { background: #856404; color: white; }
     .day-detail {
-      margin-top: 18px; padding: 16px; background: #f8f8f8;
-      border-radius: 12px; border-left: 4px solid #c0392b;
+      border: 2px solid #e0e0e0; border-radius: 10px; padding: 14px; margin-top: 14px;
     }
-    .day-detail h3 { color: #c0392b; margin-bottom: 12px; font-size: 1.1em; }
+    .day-detail h3 { color: #c0392b; margin-bottom: 12px; }
     .name-list { list-style: none; padding: 0; }
-    .name-list li {
-      padding: 8px 0; border-bottom: 1px solid #eee;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .name-list li { padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
     .name-list li:last-child { border-bottom: none; }
-    .name-tag { font-weight: bold; }
-    .time-tag { font-size: 0.8em; color: #888; }
-    .empty-slot {
-      color: #bbb; font-style: italic; padding: 6px 0; font-size: 0.9em;
-    }
+    .name-tag { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 0.9em; }
+    .time-tag { color: #888; font-size: 0.85em; }
+    .empty-slot { color: #999; font-style: italic; font-size: 0.9em; }
 
-    /* ===== OPEN SHIFTS ===== */
-    .open-shifts-grid {
-      display: grid; gap: 10px;
+    /* OPEN SHIFTS */
+    .week-filter { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .week-filter button {
+      padding: 7px 14px; border: 2px solid #ddd; border-radius: 20px;
+      cursor: pointer; font-size: 0.85em; font-weight: bold; background: #f5f5f5; color: #555;
     }
+    .week-filter button.active { background: #c0392b; color: white; border-color: #c0392b; }
     .open-day {
-      border: 2px solid #ffeaa7; border-radius: 10px; padding: 12px;
-      background: #fffdf0;
+      border: 2px solid #ffeaa7; border-radius: 12px; padding: 14px;
+      margin-bottom: 14px; background: #fffdf0;
     }
-    .open-day-title {
-      font-weight: bold; color: #333; margin-bottom: 8px; font-size: 0.95em;
-    }
+    .open-day-title { font-weight: bold; color: #333; margin-bottom: 10px; font-size: 0.95em; }
     .open-slot {
-      display: flex; align-items: center; gap: 8px;
-      padding: 5px 0; border-bottom: 1px solid #fce08a; font-size: 0.88em;
+      display: flex; align-items: center; gap: 10px; padding: 7px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.9em;
     }
     .open-slot:last-child { border-bottom: none; }
     .open-dot { width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; flex-shrink: 0; }
     .open-dot.bereit { background: #f39c12; }
-    .all-filled {
-      text-align: center; padding: 30px; color: #27ae60;
-      font-weight: bold; font-size: 1.1em;
-    }
+    .all-filled { text-align: center; color: #27ae60; font-weight: bold; padding: 20px; }
 
+    /* ADMIN */
     .page { display: none; }
     .page.active { display: block; }
 
-    .week-filter { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-    .week-filter button {
-      padding: 6px 14px; border-radius: 20px; border: 2px solid #e0e0e0;
-      background: white; cursor: pointer; font-size: 0.85em; font-weight: bold; color: #666;
+    /* MODAL */
+    .modal-overlay {
+      display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
     }
-    .week-filter button.active { border-color: #c0392b; color: #c0392b; background: #fdf2f2; }
-
-    @media (max-width: 600px) {
-      .cal-cell { min-height: 52px; padding: 4px; }
-      .cal-day-num { font-size: 0.78em; }
-      .cal-badge { font-size: 0.62em; }
-      header .logo-text { font-size: 1.5em; }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 16px; padding: 24px;
+      width: 90%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
+    .modal h3 { color: #c0392b; margin-bottom: 16px; }
+    .modal .form-group { margin-bottom: 12px; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+    .modal-btns button { flex: 1; }
   </style>
 </head>
 <body>
 <div class="container">
   <header>
     <div class="logo-wrap">
-      <img id="header-logo" src="logo.png" alt="Pizza Pino" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'" />
+      <img id="header-logo" src="logo.png" alt="Pizza Pino"
+        onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'" />
       <div id="logo-fallback" class="logo-text" style="display:none">🍕 Pizza Pino</div>
     </div>
     <p>Fahrer Schichtplan</p>
@@ -214,12 +185,11 @@
     <div class="nav-tab" onclick="showPage('admin')">👨‍💼 Chef</div>
   </div>
 
-  <!-- ===== REGISTER ===== -->
+  <!-- REGISTER -->
   <div class="page active" id="page-register">
     <div class="card">
       <h2>✏️ Für Schicht eintragen</h2>
       <div id="msg-register" class="message"></div>
-
       <div class="form-group">
         <label>Standort</label>
         <div class="standort-tabs">
@@ -227,26 +197,21 @@
           <div class="standort-tab" id="tab-esslingen" onclick="selectStandort('esslingen')">📍 Esslingen</div>
         </div>
       </div>
-
       <div class="form-group">
         <label for="reg-name">Dein Name</label>
         <input type="text" id="reg-name" placeholder="Vorname Nachname" />
       </div>
-
       <div class="form-group">
         <label for="reg-phone">📱 Handynummer <span style="font-weight:normal;color:#888">(für WhatsApp Bestätigung)</span></label>
         <input type="tel" id="reg-phone" placeholder="z.B. 0171 1234567" />
       </div>
-
       <div class="form-group">
         <label for="reg-date">Datum</label>
         <input type="date" id="reg-date" />
       </div>
-
       <div id="closed-warning" class="message error" style="display:none">
         ⛔ Dienstag ist Ruhetag – kein Betrieb.
       </div>
-
       <div id="type-group" class="form-group">
         <label for="reg-type">Schichttyp</label>
         <select id="reg-type" onchange="updateTimeInfo()">
@@ -254,24 +219,19 @@
           <option value="bereitschaft">📞 Bereitschaft</option>
         </select>
       </div>
-
       <div class="time-info-box" id="time-info-box">
         <div style="font-weight:bold;color:#856404;margin-bottom:8px">⏰ Schichtzeiten an diesem Tag:</div>
         <div id="time-info-rows"></div>
       </div>
-
       <button class="btn btn-primary" onclick="registerShift()">Eintragen 🍕</button>
       <button class="btn btn-secondary" onclick="unregisterShift()">Austragen ❌</button>
-
       <a id="cal-add-btn" href="#" target="_blank" style="display:none;margin-top:12px;text-decoration:none">
-        <button class="btn" style="background:#27ae60;color:white">
-          📅 Schicht zum Kalender hinzufügen
-        </button>
+        <button class="btn" style="background:#27ae60;color:white">📅 Schicht zum Kalender hinzufügen</button>
       </a>
     </div>
   </div>
 
-  <!-- ===== CALENDAR ===== -->
+  <!-- CALENDAR -->
   <div class="page" id="page-calendar">
     <div class="card">
       <h2>📅 Monatskalender</h2>
@@ -299,7 +259,7 @@
     </div>
   </div>
 
-  <!-- ===== OPEN SHIFTS ===== -->
+  <!-- OPEN SHIFTS -->
   <div class="page" id="page-open">
     <div class="card">
       <h2>🔴 Offene Schichten</h2>
@@ -308,15 +268,15 @@
         <div class="standort-tab" id="open-tab-esslingen" onclick="selectOpenStandort('esslingen')">📍 Esslingen</div>
       </div>
       <div class="week-filter" id="open-week-filter">
-        <button class="active" onclick="selectOpenWeeks(2, this)">2 Wochen</button>
-        <button onclick="selectOpenWeeks(4, this)">4 Wochen</button>
-        <button onclick="selectOpenWeeks(8, this)">8 Wochen</button>
+        <button class="active" onclick="selectOpenWeeks(0, this)">Diese Woche</button>
+        <button onclick="selectOpenWeeks(1, this)">Nächste Woche</button>
+        <button onclick="selectOpenWeeks(2, this)">Übernächste</button>
       </div>
       <div id="open-shifts-container"></div>
     </div>
   </div>
 
-  <!-- ===== ADMIN ===== -->
+  <!-- ADMIN -->
   <div class="page" id="page-admin">
     <div class="card">
       <h2>👨‍💼 Chef-Bereich</h2>
@@ -334,36 +294,58 @@
           <div class="standort-tab active" id="adm-tab-uhingen" onclick="selectAdminStandort('uhingen')">📍 Uhingen</div>
           <div class="standort-tab" id="adm-tab-esslingen" onclick="selectAdminStandort('esslingen')">📍 Esslingen</div>
         </div>
-        <div class="cal-nav">
-          <button onclick="changeAdminMonth(-1)">◀</button>
-          <span id="admin-month-label"></span>
-          <button onclick="changeAdminMonth(1)">▶</button>
+        <div class="week-filter" id="admin-week-filter" style="margin-bottom:15px">
+          <button onclick="selectAdminView('current', this)" class="active">Diese Woche</button>
+          <button onclick="selectAdminView('next', this)">Nächste Woche</button>
+          <button onclick="selectAdminView('after', this)">Übernächste</button>
+          <button onclick="selectAdminView('back4', this)">◀ 4 Wochen</button>
+          <button onclick="selectAdminView('back8', this)">◀ 8 Wochen</button>
         </div>
+        <div style="font-weight:bold;color:#555;margin-bottom:12px;font-size:0.9em" id="admin-week-label"></div>
         <div id="admin-shifts-table"></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ADMIN MANUAL ASSIGN MODAL -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal">
+    <h3>✏️ Schicht manuell belegen</h3>
+    <div id="assign-info" style="background:#fdf2f2;border-radius:8px;padding:10px;margin-bottom:14px;font-size:0.9em;color:#555"></div>
+    <div class="form-group">
+      <label>Name des Fahrers</label>
+      <input type="text" id="assign-name" placeholder="Vorname Nachname" />
+    </div>
+    <div class="form-group">
+      <label>Handynummer (optional)</label>
+      <input type="tel" id="assign-phone" placeholder="z.B. 0171 1234567" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeAssignModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="confirmAssign()">Eintragen 🍕</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ===== CONFIG =====
 const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const DAYS_SHORT = ['So','Mo','Di','Mi','Do','Fr','Sa'];
 const DAYS_FULL = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 
-// ===== STATE =====
 let regStandort = 'uhingen';
 let calStandort = 'uhingen';
 let openStandort = 'uhingen';
 let adminStandort = 'uhingen';
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
-let adminYear = new Date().getFullYear();
-let adminMonth = new Date().getMonth();
-let openWeeks = 2;
+let openWeeks = 0;
 let allShifts = [];
 let adminPassword = '';
 let selectedDay = null;
+let adminWeekOffset = 0;
+
+// Pending assign slot
+let assignSlot = null;
 
 // ===== HELPERS =====
 function isFrSaSo(dateStr) {
@@ -387,6 +369,16 @@ function formatDate(dateStr) {
 }
 function toDateStr(y, m, d) {
   return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function getKWDates(offsetWeeks) {
+  const now = new Date();
+  const dow = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1) + offsetWeeks * 7);
+  monday.setHours(0,0,0,0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { monday, sunday };
 }
 
 // ===== NAV =====
@@ -412,7 +404,6 @@ function selectStandort(s) {
 function updateTimeInfo() {
   const date = document.getElementById('reg-date').value;
   if (!date || isTuesday(date)) return;
-  const type = document.getElementById('reg-type').value;
   const end = getEndTime(date);
   const max = getMaxSlots(date, regStandort);
   let html = '';
@@ -441,17 +432,14 @@ document.getElementById('reg-date').addEventListener('change', function() {
 });
 
 const today = new Date().toISOString().split('T')[0];
-
-// Max date: Ende KW+2 (aktuelle KW + 2 weitere KWs)
-// Bsp: KW20 → bis Ende KW22 (Sonntag)
 const nowD = new Date();
-const dayOfWeek = nowD.getDay();
-const monday = new Date(nowD);
-monday.setDate(nowD.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-monday.setHours(0,0,0,0);
-const maxDate = new Date(monday);
-maxDate.setDate(monday.getDate() + 20); // +3 Wochen - 1 Tag = Ende KW+2 (Sonntag)
-const maxDateStr = maxDate.toISOString().split('T')[0];
+const _dow = nowD.getDay();
+const _monday = new Date(nowD);
+_monday.setDate(nowD.getDate() - (_dow === 0 ? 6 : _dow - 1));
+_monday.setHours(0,0,0,0);
+const _maxDate = new Date(_monday);
+_maxDate.setDate(_monday.getDate() + 20);
+const maxDateStr = _maxDate.toISOString().split('T')[0];
 
 document.getElementById('reg-date').min = today;
 document.getElementById('reg-date').max = maxDateStr;
@@ -481,14 +469,13 @@ async function registerShift() {
     showMsg('msg-register', '✅ ' + data.message, 'success');
     document.getElementById('reg-name').value = '';
     updateTimeInfo();
-    // Show calendar button
     if (data.calLink) {
       const calBtn = document.getElementById('cal-add-btn');
       calBtn.href = data.calLink;
       calBtn.style.display = 'block';
     }
   } else {
-    showMsg('msg-register', '❌ ' + data.error, 'error');
+    showMsg('msg-register', data.error, 'error');
   }
 }
 
@@ -507,7 +494,7 @@ async function unregisterShift() {
     document.getElementById('reg-name').value = '';
     document.getElementById('cal-add-btn').style.display = 'none';
   } else {
-    showMsg('msg-register', '❌ ' + data.error, 'error');
+    showMsg('msg-register', data.error, 'error');
   }
 }
 
@@ -537,41 +524,27 @@ function renderCalendar() {
   document.getElementById('cal-month-label').textContent = `${MONTHS_DE[calMonth]} ${calYear}`;
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
-
-  // Headers Mo-So
-  const headerOrder = ['Mo','Di','Mi','Do','Fr','Sa','So'];
-  headerOrder.forEach(d => {
+  ['Mo','Di','Mi','Do','Fr','Sa','So'].forEach(d => {
     const h = document.createElement('div');
-    h.className = 'cal-header-cell';
-    h.textContent = d;
-    grid.appendChild(h);
+    h.className = 'cal-header-cell'; h.textContent = d; grid.appendChild(h);
   });
-
-  const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-  // offset: Mon=0, so if firstDay=0(Sun) offset=6, else offset=firstDay-1
   const offset = firstDay === 0 ? 6 : firstDay - 1;
-
   for (let i = 0; i < offset; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'cal-cell empty';
-    grid.appendChild(empty);
+    const empty = document.createElement('div'); empty.className = 'cal-cell empty'; grid.appendChild(empty);
   }
-
   const todayStr = new Date().toISOString().split('T')[0];
-
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = toDateStr(calYear, calMonth, day);
     const d = new Date(dateStr);
     const dayOfWeek = d.getDay();
     const closed = dayOfWeek === 2;
     const isPast = dateStr < todayStr;
-
     const shifts = allShifts.filter(s => s.standort === calStandort && s.date === dateStr);
     const fixList = shifts.filter(s => s.type === 'fix');
     const bereitList = shifts.filter(s => s.type === 'bereitschaft');
     const max = getMaxSlots(dateStr, calStandort);
-
     const cell = document.createElement('div');
     let cls = 'cal-cell';
     if (closed) cls += ' closed';
@@ -579,29 +552,19 @@ function renderCalendar() {
     if (dateStr === selectedDay) cls += ' selected';
     if (isPast && dateStr !== todayStr) cls += ' past';
     cell.className = cls;
-
     let badgesHtml = '';
     if (!closed) {
       const fixFull = fixList.length >= max.fix;
       const bereitFull = bereitList.length >= max.bereit;
-      badgesHtml = `
-        <div class="cal-badges">
-          <span class="cal-badge ${fixFull ? 'badge-fix-full' : 'badge-fix-ok'}">
-            ✅ ${fixList.length}/${max.fix}
-          </span>
-          <span class="cal-badge ${bereitFull ? 'badge-bereit-full' : 'badge-bereit-ok'}">
-            📞 ${bereitList.length}/${max.bereit}
-          </span>
-        </div>`;
+      badgesHtml = `<div class="cal-badges">
+        <span class="cal-badge ${fixFull ? 'badge-fix-full' : 'badge-fix-ok'}">✅ ${fixList.length}/${max.fix}</span>
+        <span class="cal-badge ${bereitFull ? 'badge-bereit-full' : 'badge-bereit-ok'}">📞 ${bereitList.length}/${max.bereit}</span>
+      </div>`;
     } else {
       badgesHtml = '<div style="font-size:0.65em;color:#bbb;margin-top:2px">Ruhetag</div>';
     }
-
     cell.innerHTML = `<div class="cal-day-num">${day}</div>${badgesHtml}`;
-
-    if (!closed) {
-      cell.onclick = () => showDayDetail(dateStr);
-    }
+    if (!closed) cell.onclick = () => showDayDetail(dateStr);
     grid.appendChild(cell);
   }
 }
@@ -614,36 +577,26 @@ function showDayDetail(dateStr) {
   const bereitList = shifts.filter(s => s.type === 'bereitschaft').sort((a,b) => a.slotNumber - b.slotNumber);
   const max = getMaxSlots(dateStr, calStandort);
   const end = getEndTime(dateStr);
-
-  document.getElementById('detail-title').textContent =
-    `${DAYS_FULL[d.getDay()]}, ${formatDate(dateStr)}`;
-
-  // Fix slots with empty slots shown
+  document.getElementById('detail-title').textContent = `${DAYS_FULL[d.getDay()]}, ${formatDate(dateStr)}`;
   let fixHtml = '';
   for (let i = 1; i <= max.fix; i++) {
     const s = fixList.find(x => x.slotNumber === i);
     const start = slotStartTime('fix', i);
-    if (s) {
-      fixHtml += `<li><span class="name-tag">${s.name}</span><span class="time-tag">⏰ ${start} – ${end} Uhr</span></li>`;
-    } else {
-      fixHtml += `<li><span class="empty-slot">🔴 Platz ${i} frei (${start} – ${end} Uhr)</span></li>`;
-    }
+    fixHtml += s
+      ? `<li><span class="name-tag">${s.name}</span><span class="time-tag">⏰ ${start} – ${end} Uhr</span></li>`
+      : `<li><span class="empty-slot">🔴 Platz ${i} frei (${start} – ${end} Uhr)</span></li>`;
   }
-
   let bereitHtml = '';
   for (let i = 1; i <= max.bereit; i++) {
     const s = bereitList.find(x => x.slotNumber === i);
-    if (s) {
-      bereitHtml += `<li><span class="name-tag">${s.name}</span><span class="time-tag">⏰ 17:15 – ${end} Uhr</span></li>`;
-    } else {
-      bereitHtml += `<li><span class="empty-slot">🟡 Bereitschaft frei (17:15 – ${end} Uhr)</span></li>`;
-    }
+    bereitHtml += s
+      ? `<li><span class="name-tag">${s.name}</span><span class="time-tag">⏰ 17:15 – ${end} Uhr</span></li>`
+      : `<li><span class="empty-slot">🟡 Bereitschaft frei (17:15 – ${end} Uhr)</span></li>`;
   }
-
   document.getElementById('detail-fix-list').innerHTML = fixHtml;
   document.getElementById('detail-bereit-list').innerHTML = bereitHtml;
   document.getElementById('day-detail').style.display = 'block';
-  renderCalendar(); // re-render to update selected
+  renderCalendar();
 }
 
 // ===== OPEN SHIFTS =====
@@ -655,7 +608,7 @@ function selectOpenStandort(s) {
 }
 function selectOpenWeeks(w, btn) {
   openWeeks = w;
-  document.querySelectorAll('.week-filter button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#open-week-filter button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderOpenShifts();
 }
@@ -663,20 +616,22 @@ function selectOpenWeeks(w, btn) {
 function renderOpenShifts() {
   const container = document.getElementById('open-shifts-container');
   container.innerHTML = '';
-  const todayStr = new Date().toISOString().split('T')[0];
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() + openWeeks * 7);
-  const endStr = endDate.toISOString().split('T')[0];
+  const { monday, sunday } = getKWDates(openWeeks);
+  const startStr = monday.toISOString().split('T')[0];
+  const endStr = sunday.toISOString().split('T')[0];
+
+  const kwLabel = document.createElement('div');
+  kwLabel.style.cssText = 'font-weight:bold;color:#555;margin-bottom:12px;font-size:0.9em';
+  kwLabel.textContent = `📅 ${formatDate(startStr)} – ${formatDate(endStr)}`;
+  container.appendChild(kwLabel);
 
   let hasAny = false;
-  const current = new Date(todayStr);
-
+  const current = new Date(startStr);
   while (current.toISOString().split('T')[0] <= endStr) {
     const dateStr = current.toISOString().split('T')[0];
     const d = new Date(dateStr);
     const dayOfWeek = d.getDay();
     current.setDate(current.getDate() + 1);
-
     if (dayOfWeek === 2) continue;
 
     const shifts = allShifts.filter(s => s.standort === openStandort && s.date === dateStr);
@@ -684,11 +639,7 @@ function renderOpenShifts() {
     const bereitList = shifts.filter(s => s.type === 'bereitschaft').sort((a,b) => a.slotNumber - b.slotNumber);
     const max = getMaxSlots(dateStr, openStandort);
     const end = getEndTime(dateStr);
-
-    const openFix = max.fix - fixList.length;
-    const openBereit = max.bereit - bereitList.length;
-    const totalOpen = openFix + openBereit;
-
+    const totalOpen = (max.fix - fixList.length) + (max.bereit - bereitList.length);
     hasAny = true;
 
     const div = document.createElement('div');
@@ -697,8 +648,6 @@ function renderOpenShifts() {
     div.style.background = totalOpen === 0 ? '#f0fff4' : '#fffdf0';
 
     let slotsHtml = '';
-
-    // Fix slots – show name if filled, show "offen" if not
     for (let i = 1; i <= max.fix; i++) {
       const filled = fixList.find(s => s.slotNumber === i);
       const start = slotStartTime('fix', i);
@@ -717,8 +666,6 @@ function renderOpenShifts() {
         </div>`;
       }
     }
-
-    // Bereitschaft – show name if filled, show "offen" if not
     for (let i = 1; i <= max.bereit; i++) {
       const filled = bereitList.find(s => s.slotNumber === i);
       if (filled) {
@@ -754,7 +701,6 @@ function renderOpenShifts() {
 }
 
 function quickRegister(dateStr, type) {
-  // Switch to register tab with pre-filled date and type
   document.getElementById('reg-date').value = dateStr;
   document.getElementById('reg-date').dispatchEvent(new Event('change'));
   document.getElementById('reg-type').value = type;
@@ -770,10 +716,12 @@ function selectAdminStandort(s) {
     document.getElementById('adm-tab-' + x).classList.toggle('active', s === x));
   renderAdminTable();
 }
-function changeAdminMonth(dir) {
-  adminMonth += dir;
-  if (adminMonth < 0) { adminMonth = 11; adminYear--; }
-  if (adminMonth > 11) { adminMonth = 0; adminYear++; }
+
+function selectAdminView(view, btn) {
+  document.querySelectorAll('#admin-week-filter button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const offsets = { current: 0, next: 1, after: 2, back4: -4, back8: -8 };
+  adminWeekOffset = offsets[view] || 0;
   renderAdminTable();
 }
 
@@ -797,30 +745,105 @@ async function loadAdminShifts() {
 }
 
 function renderAdminTable() {
-  document.getElementById('admin-month-label').textContent = `${MONTHS_DE[adminMonth]} ${adminYear}`;
+  const { monday, sunday } = getKWDates(adminWeekOffset);
+  const startStr = monday.toISOString().split('T')[0];
+  const endStr = sunday.toISOString().split('T')[0];
+  document.getElementById('admin-week-label').textContent = `📅 ${formatDate(startStr)} – ${formatDate(endStr)}`;
+
   const container = document.getElementById('admin-shifts-table');
   container.innerHTML = '';
 
-  const daysInMonth = new Date(adminYear, adminMonth + 1, 0).getDate();
   let hasAny = false;
+  const current = new Date(startStr);
 
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = toDateStr(adminYear, adminMonth, day);
+  while (current.toISOString().split('T')[0] <= endStr) {
+    const dateStr = current.toISOString().split('T')[0];
+    current.setDate(current.getDate() + 1);
     const d = new Date(dateStr);
     if (d.getDay() === 2) continue;
 
+    const max = getMaxSlots(dateStr, adminStandort);
     const dayShifts = allShifts
       .filter(s => s.standort === adminStandort && s.date === dateStr)
       .sort((a,b) => { if (a.type !== b.type) return a.type === 'fix' ? -1 : 1; return a.slotNumber - b.slotNumber; });
 
-    if (!dayShifts.length) continue;
+    const fixList = dayShifts.filter(s => s.type === 'fix');
+    const bereitList = dayShifts.filter(s => s.type === 'bereitschaft');
+    const allFilled = fixList.length >= max.fix && bereitList.length >= max.bereit;
+    const end = getEndTime(dateStr);
+
     hasAny = true;
+
+    // Build all slots (filled + open)
+    let rowsHtml = '';
+
+    for (let i = 1; i <= max.fix; i++) {
+      const s = fixList.find(x => x.slotNumber === i);
+      const start = slotStartTime('fix', i);
+      if (s) {
+        rowsHtml += `<tr>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;font-weight:bold">${s.name}</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <span style="background:#d4edda;color:#155724;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">✅ Fix ${i}</span>
+          </td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#c0392b">${start} – ${end} Uhr</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <button onclick="adminDelete(${s.id})"
+              style="background:#e74c3c;color:white;border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82em">✕</button>
+          </td>
+        </tr>`;
+      } else {
+        rowsHtml += `<tr style="background:#fff8f8">
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#999;font-style:italic">– frei –</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <span style="background:#fdf2f2;color:#c0392b;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">✅ Fix ${i}</span>
+          </td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#aaa">${start} – ${end} Uhr</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <button onclick="openAssignModal('${dateStr}','fix',${i},'${adminStandort}')"
+              style="background:#27ae60;color:white;border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82em">+ Belegen</button>
+          </td>
+        </tr>`;
+      }
+    }
+
+    for (let i = 1; i <= max.bereit; i++) {
+      const s = bereitList.find(x => x.slotNumber === i);
+      if (s) {
+        rowsHtml += `<tr>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;font-weight:bold">${s.name}</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <span style="background:#fff3cd;color:#856404;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">📞 Bereit</span>
+          </td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#c0392b">17:15 – ${end} Uhr</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <button onclick="adminDelete(${s.id})"
+              style="background:#e74c3c;color:white;border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82em">✕</button>
+          </td>
+        </tr>`;
+      } else {
+        rowsHtml += `<tr style="background:#fff8f8">
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#999;font-style:italic">– frei –</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <span style="background:#fffde7;color:#856404;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">📞 Bereit</span>
+          </td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#aaa">17:15 – ${end} Uhr</td>
+          <td style="padding:7px;border-bottom:1px solid #f5f5f5">
+            <button onclick="openAssignModal('${dateStr}','bereitschaft',1,'${adminStandort}')"
+              style="background:#27ae60;color:white;border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82em">+ Belegen</button>
+          </td>
+        </tr>`;
+      }
+    }
 
     const section = document.createElement('div');
     section.style.marginBottom = '18px';
     section.innerHTML = `
-      <div style="font-weight:bold;color:#c0392b;margin-bottom:8px">
+      <div style="font-weight:bold;color:#c0392b;margin-bottom:8px;display:flex;align-items:center;gap:8px">
         ${DAYS_FULL[d.getDay()]}, ${formatDate(dateStr)}
+        ${allFilled
+          ? '<span style="font-size:0.75em;background:#d4edda;color:#155724;padding:2px 8px;border-radius:8px">✅ Vollständig</span>'
+          : '<span style="font-size:0.75em;background:#f8d7da;color:#721c24;padding:2px 8px;border-radius:8px">🔴 Offen</span>'}
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:0.92em">
         <thead>
@@ -831,39 +854,67 @@ function renderAdminTable() {
             <th style="padding:7px;border-bottom:2px solid #eee"></th>
           </tr>
         </thead>
-        <tbody>
-          ${dayShifts.map(s => {
-            const idx = allShifts.indexOf(s);
-            const badge = s.type === 'fix'
-              ? `<span style="background:#d4edda;color:#155724;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">✅ Fix ${s.slotNumber}</span>`
-              : `<span style="background:#fff3cd;color:#856404;padding:2px 8px;border-radius:8px;font-size:0.8em;font-weight:bold">📞 Bereitschaft</span>`;
-            return `<tr>
-              <td style="padding:7px;border-bottom:1px solid #f5f5f5;font-weight:bold">${s.name}</td>
-              <td style="padding:7px;border-bottom:1px solid #f5f5f5">${badge}</td>
-              <td style="padding:7px;border-bottom:1px solid #f5f5f5;color:#c0392b">${s.startTime} – ${s.endTime} Uhr</td>
-              <td style="padding:7px;border-bottom:1px solid #f5f5f5">
-                <button onclick="adminDelete(${idx})"
-                  style="background:#e74c3c;color:white;border:none;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82em">
-                  ✕
-                </button>
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
+        <tbody>${rowsHtml}</tbody>
       </table>`;
     container.appendChild(section);
   }
 
   if (!hasAny) {
-    container.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Keine Einträge in diesem Monat</p>';
+    container.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Keine Einträge in diesem Zeitraum</p>';
   }
 }
 
-async function adminDelete(idx) {
+async function adminDelete(id) {
   if (!confirm('Eintrag wirklich löschen?')) return;
-  const res = await fetch(`/api/admin/shifts/${idx}?password=${encodeURIComponent(adminPassword)}`, { method: 'DELETE' });
+  const res = await fetch(`/api/admin/shifts/${id}?password=${encodeURIComponent(adminPassword)}`, { method: 'DELETE' });
   if (res.ok) loadAdminShifts();
   else alert('Fehler beim Löschen!');
+}
+
+// ===== MANUAL ASSIGN MODAL =====
+function openAssignModal(dateStr, type, slotNumber, standort) {
+  assignSlot = { dateStr, type, slotNumber, standort };
+  const end = getEndTime(dateStr);
+  const start = slotStartTime(type, slotNumber);
+  const typeLabel = type === 'fix' ? `✅ Fix Fahrer ${slotNumber}` : '📞 Bereitschaft';
+  document.getElementById('assign-info').innerHTML =
+    `<strong>${DAYS_FULL[new Date(dateStr).getDay()]}, ${formatDate(dateStr)}</strong><br>
+     ${typeLabel} · ${start} – ${end} Uhr · 📍 ${standort.charAt(0).toUpperCase() + standort.slice(1)}`;
+  document.getElementById('assign-name').value = '';
+  document.getElementById('assign-phone').value = '';
+  document.getElementById('assign-modal').classList.add('open');
+  setTimeout(() => document.getElementById('assign-name').focus(), 100);
+}
+
+function closeAssignModal() {
+  document.getElementById('assign-modal').classList.remove('open');
+  assignSlot = null;
+}
+
+async function confirmAssign() {
+  if (!assignSlot) return;
+  const name = document.getElementById('assign-name').value.trim();
+  const phone = document.getElementById('assign-phone').value.trim();
+  if (!name) { alert('Bitte einen Namen eingeben!'); return; }
+
+  const res = await fetch('/api/admin/shifts/assign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      password: adminPassword,
+      name, phone,
+      standort: assignSlot.standort,
+      date: assignSlot.dateStr,
+      type: assignSlot.type
+    })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    closeAssignModal();
+    loadAdminShifts();
+  } else {
+    alert('Fehler: ' + data.error);
+  }
 }
 
 // ===== INIT =====
